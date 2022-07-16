@@ -1,5 +1,5 @@
 # Use an official node runtime as a parent image - Build stage
-FROM node:14.17.5-alpine as build-image
+FROM node:14.17.1-alpine as build-image
 
 WORKDIR /app/frontend
 
@@ -13,7 +13,7 @@ RUN \
     yarn cache clean --all
 
 # Use an official node runtime as a parent image - Runtime
-FROM node:14.17.5-alpine as runtime
+FROM node:14.17.1-alpine as runtime
 
 WORKDIR /app/frontend
 

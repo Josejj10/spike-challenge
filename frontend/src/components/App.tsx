@@ -1,39 +1,44 @@
-import {useState} from 'react';
-import logo from '../logo.svg';
+import React, { useState } from "react";
 import axios from "axios";
-import './App.scss';
-
+import "./App.scss";
+import SearchAddress from "./SearchAdress/SearchAddress";
 
 function App() {
-  const [textInput, setTextInput] = useState<string>("");
+  const [addressFrom, setAddressFrom] = useState<any>({
+    properties: { display_name: "" },
+  });
+  const [addressTo, setAddressTo] = useState<any>({});
   const [output, setOutput] = useState<string>("");
 
   const handleSubmit = () => {
-    axios.get(`/api/test?text=${textInput}`).then(res => {
-      setOutput(res.data.text);
-    }).catch(err => console.log(err));
+    axios
+      .post(`/api/distance`, {
+        addressFrom: addressFrom.value,
+        addressTo: addressTo.value,
+      })
+      .then((res) => {
+        setOutput(res.data[0].display_name);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <pre>django-react-docker-heroku-template</pre>
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <img src={logo} className="App-logo" alt="logo"/>
-
-        <div>
-          <p>Test connection with API:</p>
-          <label htmlFor="char-input">Make this text uppercase: </label>
-          <input
-            id="char-input" type="text" value={textInput}
-            onChange={(e) => setTextInput(e.target.value)}
-          />
-          <button onClick={handleSubmit}>Submit</button>
-          <h3>{output}</h3>
-        </div>
-      </header>
+      <p>Distance between addresses:</p>
+      <div className="App-body">
+        <SearchAddress
+          address={addressFrom}
+          setAddress={setAddressFrom}
+          title={`Desde:`}
+        />
+        <SearchAddress
+          address={addressTo}
+          setAddress={setAddressTo}
+          title={`Hasta:`}
+        />
+      </div>
+      <button onClick={handleSubmit}>Submit</button>
+      <h3>{output}</h3>
     </div>
   );
 }
