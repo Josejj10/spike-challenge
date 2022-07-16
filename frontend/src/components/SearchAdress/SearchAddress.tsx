@@ -1,5 +1,4 @@
 import axios from "axios";
-import "./SearchAddress.scss";
 import AsyncSelect from "react-select/async";
 
 export interface SearchAddressProps {
