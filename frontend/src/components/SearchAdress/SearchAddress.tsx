@@ -26,7 +26,7 @@ function SearchAddress({ title, address, setAddress }: SearchAddressProps) {
       .catch((err) => console.log(err));
   };
 
-  const debouncedSearchAddress = _.debounce(searchAddresses, 500);
+  const debouncedSearchAddress = _.debounce(searchAddresses, 1000);
 
   const getOptions = (query: string, callback: any) => {
     if (_.isEmpty(query)) return callback(null, { options: [] });
