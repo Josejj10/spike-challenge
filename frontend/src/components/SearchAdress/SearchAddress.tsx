@@ -16,17 +16,17 @@ function SearchAddress({ title, address, setAddress }: SearchAddressProps) {
         `https://nominatim.openstreetmap.org/search?q=${query}&format=geojson&limit=10`
       )
       .then((response: any) => {
-        callback(null, {
-          options: response.data.features.map((address: any) => ({
-            value: address,
-            label: address.properties.display_name,
-          })),
-        });
+        const mappedResults = response.data.features.map((address: any) => ({
+          value: address,
+          label: address.properties.display_name,
+        }));
+
+        callback(mappedResults);
       })
       .catch((err) => console.log(err));
   };
 
-  const debouncedSearchAddress = _.debounce(searchAddresses, 200);
+  const debouncedSearchAddress = _.debounce(searchAddresses, 500);
 
   const getOptions = (query: string, callback: any) => {
     if (_.isEmpty(query)) return callback(null, { options: [] });
@@ -36,19 +36,17 @@ function SearchAddress({ title, address, setAddress }: SearchAddressProps) {
   };
 
   return (
-    <div className="">
-      <header className="">
-        <div>
-          <label htmlFor="char-input">{title}</label>
-          <AsyncSelect
-            cacheOptions
-            defaultOptions
-            loadOptions={getOptions}
-            onChange={setAddress}
-            value={address}
-          />
-        </div>
-      </header>
+    <div>
+      <label className="mb-1" htmlFor="char-input">
+        {title}
+      </label>
+      <AsyncSelect
+        cacheOptions
+        loadOptions={getOptions}
+        onChange={setAddress}
+        value={address}
+        noOptionsMessage={() => "Start typing an address!"}
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {
   IDistanceQuery,
@@ -8,48 +8,60 @@ import {
 import Button from "../Button/Button";
 import DistanceResult from "../DistanceResult/DistanceResult";
 
-function SearchHistory() {
+interface SearchHistoryProps {
+  changeTab: () => void;
+}
+
+function SearchHistory({ changeTab }: SearchHistoryProps) {
   const [searchHistory, setSearchHistory] = useState<IDistanceQuery[]>([]);
   const [page, setPage] = useState(1);
+  const [nextPageExists, setNextPageExists] = useState(true);
 
   useEffect(() => {
+    if (!nextPageExists) return;
     axios
       .get(`/api/distance?page=${page}`)
       .then((res) => {
-        setSearchHistory(
-          res.data?.results.map((dq: any) => mapDistanceQuery(dq)) || []
-        );
+        setSearchHistory((prev) => [
+          ...prev,
+          ...res.data?.results.map((dq: any) => mapDistanceQuery(dq)),
+        ]);
+        setNextPageExists(res.data?.next ? true : false);
       })
       .catch((err) => console.log(err));
-  }, [page]);
+  }, [page, nextPageExists]);
 
   const getSearchHistory = () => {
     setPage(page + 1);
   };
 
   return (
-    <div className="grid grid-cols-1 gap-5">
+    <div className="">
       {searchHistory.length > 0 && (
         <InfiniteScroll
-          dataLength={searchHistory.length} //This is important field to render the next data
+          className="grid grid-cols-1 gap-5"
+          dataLength={searchHistory.length}
           next={getSearchHistory}
-          hasMore={true}
-          loader={<h4>Loading...</h4>}
+          hasMore={nextPageExists}
+          loader={<></>}
           endMessage={
-            <p style={{ textAlign: "center" }}>
-              <b>Yay! You have seen it all</b>
+            <p className="text-center">
+              <b>End of search history.</b>
             </p>
           }
         >
           {searchHistory.map((distanceQuery: IDistanceQuery) => (
-            <DistanceResult distanceQuery={distanceQuery} />
+            <DistanceResult
+              distanceQuery={distanceQuery}
+              key={distanceQuery.id}
+            />
           ))}
         </InfiniteScroll>
       )}
       {searchHistory.length === 0 && (
         <div className="flex flex-col max-w-xs items-center mx-auto justify-center">
           <p className="mb-3">No searches yet.</p>
-          <Button text="Make a search!" />
+          <Button text="Make a search!" onClick={changeTab} />
         </div>
       )}
     </div>

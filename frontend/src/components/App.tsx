@@ -32,7 +32,7 @@ function App() {
         <h3 className="text-lg font-semibold lg:text-xl text-center mb-3 lg:mb-5">
           ⚡ Spike Challenge done by Jose Javier ⚡
         </h3>
-        <p className="text-md lg:text-lg text-center">
+        <p className="text-md lg:text-lg text-center mb-2 lg:mb-3">
           Using{" "}
           <Link
             url="https://nominatim.org/release-docs/develop/api/Overview/"
@@ -40,6 +40,15 @@ function App() {
           />{" "}
           calculate the distance in km. between two given addresses and provide
           a search history.
+        </p>
+        <p className="text-md lg:text-lg text-center">
+          This is a monorepo that has a backend project (made with Django) and a
+          frontend project (made with React), contained with Docker and deployed
+          in Heroku. For more information please visit{" "}
+          <Link
+            url="https://github.com/Josejj10/spike-challenge"
+            text="the project's README."
+          />
         </p>
       </header>
       <section className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:px-3 lg:py-10 w-full md:max-w-4xl">
@@ -52,7 +61,9 @@ function App() {
         </div>
         <div className="lg:col-span-10">
           {isCalcActive && <CalculateDistance />}
-          {isHistoryActive && <SearchHistory />}
+          {isHistoryActive && (
+            <SearchHistory changeTab={() => changeActiveTab(TabEnums.CALC)} />
+          )}
         </div>
       </section>
     </main>

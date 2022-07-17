@@ -9,7 +9,7 @@ export interface TabsProps {
 
 function Tabs({ options, active, onSelect }: TabsProps) {
   return (
-    <div className="lg:pr-2 flex align-center justify-center gap-5 md:gap-12 lg:flex-col">
+    <div className="lg:pr-2 flex align-center justify-center gap-12 md:gap-5 lg:flex-col">
       {options.map((tab) => (
         <Tab
           active={tab.key === active}
