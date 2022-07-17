@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   IDistanceQuery,
   mapDistanceQuery,
@@ -12,9 +12,16 @@ function CalculateDistance() {
   const [addressFrom, setAddressFrom] = useState<any>({});
   const [addressTo, setAddressTo] = useState<any>({});
   const [distanceQuery, setDistanceQuery] = useState<IDistanceQuery>();
+  const [touched, setTouched] = useState(false);
+
+  const hasSubmitErrors = useMemo(() => {
+    if (!touched) return false;
+    return !addressFrom.value || !addressTo.value;
+  }, [addressFrom, addressTo, touched]);
 
   const handleSubmit = () => {
-    if (!addressFrom || !addressTo) return;
+    if (!touched) setTouched(true);
+    if (!addressFrom.value || !addressTo.value) return;
     axios
       .post(`/api/distance`, {
         addressFrom: addressFrom.value,
@@ -28,18 +35,30 @@ function CalculateDistance() {
 
   return (
     <div className="grid grid-cols-2 gap-5">
-      <SearchAddress
-        address={addressFrom}
-        setAddress={setAddressFrom}
-        title={`Desde:`}
-      />
-      <SearchAddress
-        address={addressTo}
-        setAddress={setAddressTo}
-        title={`Hasta:`}
-      />
-      <div className="flex justify-center col-span-2">
+      <p className="col-span-2">
+        To calculate a distance, just search for your two addresses and submit:
+      </p>
+      <div className="col-span-2 lg:col-span-1">
+        <SearchAddress
+          address={addressFrom}
+          setAddress={setAddressFrom}
+          title={`Starting Address:`}
+        />
+      </div>
+      <div className="col-span-2 lg:col-span-1">
+        <SearchAddress
+          address={addressTo}
+          setAddress={setAddressTo}
+          title={`End Address:`}
+        />
+      </div>
+      <div className="flex flex-col justify-center items-center col-span-2">
         <Button text="Submit" onClick={handleSubmit} />
+        {hasSubmitErrors && (
+          <div className="text-red-700">
+            Both addresses should be selected to submit.
+          </div>
+        )}
       </div>
       {distanceQuery && (
         <div className="col-span-2">
