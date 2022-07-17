@@ -1,16 +1,21 @@
 from django.http import JsonResponse
 from datetime import datetime
 
+from .paginators import SafePaginator
+
 from .models import DistanceQuery
 
 from .distance import find_distance
 from .serializers import AddressSerializer, DistanceQuerySerializer
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 
-class DistanceApiView(APIView):
+class DistanceApiView(generics.ListAPIView):
+    queryset = DistanceQuery.objects.all().order_by('-id')
+    serializer_class = DistanceQuerySerializer
+    paginator_class = SafePaginator
+
     def post(self, request):
         addressFromSerializer = AddressSerializer(data=request.data['addressFrom'])
         addressToSerializer = AddressSerializer(data=request.data['addressTo'])
@@ -23,8 +28,7 @@ class DistanceApiView(APIView):
         a2 = addressToSerializer.save()
         distance = find_distance(address1=addressFromSerializer.data, address2=addressToSerializer.data)
         
-        if distance: 
-            # TODO save tuple addresses
+        if distance >= 0: 
             time = datetime.now()
             dq = DistanceQuery.objects.create(address_from=a1, address_to=a2, distance=distance, time=time)
             dqSerialized = DistanceQuerySerializer(dq)

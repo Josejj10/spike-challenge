@@ -4,8 +4,8 @@ from math import radians, cos, sin, asin, sqrt
 
 
 def find_distance(address1, address2):
-    lat1, lon1 = address1.get('geometry', None).get('coordinates',None)
-    lat2, lon2 = address2.get('geometry', None).get('coordinates',None)
+    lon1, lat1 = address1.get('geometry', None).get('coordinates',None)
+    lon2, lat2 = address2.get('geometry', None).get('coordinates',None)
 
     # The math module contains a function named
     # radians which converts from degrees to radians.
